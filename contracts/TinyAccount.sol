@@ -2,14 +2,18 @@
 pragma solidity 0.8.19;
 
 import "@openzeppelin/contracts/access/Ownable.sol";
+import "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
 
 import "./IAccount.sol";
 
 contract TinyAccount is IAccount, Ownable {
+    using ECDSA for bytes32;
+
     address public immutable entryPoint;
 
-    constructor(address entryPoint_) {
-        entryPoint = entryPoint_;
+    modifier onlyEntryPoint() {
+        require(msg.sender == entryPoint, "TA: caller must be the entry point");
+        _;
     }
 
     modifier onlyOwnerOrEntryPoint() {
@@ -20,12 +24,30 @@ contract TinyAccount is IAccount, Ownable {
         _;
     }
 
+    constructor(address entryPoint_) {
+        entryPoint = entryPoint_;
+    }
+
+    receive() external payable {}
+
     function validateUserOp(
-        UserOperation calldata,
-        bytes32,
-        uint256
-    ) external pure returns (uint256) {
-        return 0;
+        UserOperation calldata userOp_,
+        bytes32 userOpHash_,
+        uint256 missingAccountFunds_
+    ) external onlyEntryPoint returns (uint256 validationData_) {
+        if (
+            userOpHash_.toEthSignedMessageHash().recover(userOp_.signature) ==
+            owner()
+        ) {
+            validationData_ = 0;
+        } else {
+            validationData_ = 1;
+        }
+
+        if (missingAccountFunds_ > 0) {
+            (bool success, ) = msg.sender.call{value: missingAccountFunds_}("");
+            (success);
+        }
     }
 
     function execute(
