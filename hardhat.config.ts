@@ -19,6 +19,7 @@ switch (process.env.ENV) {
     config.etherscan = {
       apiKey: process.env.ETHERSCAN_API_KEY,
     };
+    break;
 }
 
 export default config;
