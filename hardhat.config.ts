@@ -1,5 +1,4 @@
 import { HardhatUserConfig } from "hardhat/config";
-import { NetworksUserConfig } from "hardhat/types";
 
 import "@nomicfoundation/hardhat-toolbox";
 

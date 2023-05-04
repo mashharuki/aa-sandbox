@@ -1,7 +1,8 @@
 import { ethers } from "hardhat";
 
 import { Bytes } from "ethers";
-import { UserOperation } from "./interfaces";
+
+import { UserOperation } from "./models";
 
 export function getUserOperationHash(
   userOp: UserOperation,

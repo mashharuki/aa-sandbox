@@ -1,12 +1,9 @@
 import { ethers } from "hardhat";
 
-import { expect } from "chai";
 import { loadFixture } from "@nomicfoundation/hardhat-network-helpers";
+import { expect } from "chai";
 
-import { Bytes } from "ethers";
-import { UserOperation } from "./interfaces";
-
-import * as utils from "./utils";
+import { UserOperation, getUserOperationHash } from "../lib";
 
 describe("TinyAccount", () => {
   async function fixture() {
@@ -47,7 +44,7 @@ describe("TinyAccount", () => {
         signature: [],
       };
 
-      const userOpHash = utils.getUserOperationHash(
+      const userOpHash = getUserOperationHash(
         userOp,
         await tinyAccount.entryPoint(),
         network.chainId
@@ -69,43 +66,39 @@ describe("TinyAccount", () => {
         await tx.wait();
       }
 
-      let userOp: UserOperation;
-      let userOpHash: Bytes;
-      {
-        const block = await ethers.provider.getBlock("latest");
-        const entryPointAddress = await tinyAccount.entryPoint();
+      const block = await ethers.provider.getBlock("latest");
+      const entryPointAddress = await tinyAccount.entryPoint();
 
-        const callData = tinyAccount.interface.encodeFunctionData("execute", [
-          other.address,
-          ethers.utils.parseEther("1"),
-          [],
-        ]);
-        const maxPriorityFeePerGas = ethers.utils.parseUnits("1", "gwei");
+      const callData = tinyAccount.interface.encodeFunctionData("execute", [
+        other.address,
+        ethers.utils.parseEther("1"),
+        [],
+      ]);
+      const maxPriorityFeePerGas = ethers.utils.parseUnits("1", "gwei");
 
-        userOp = {
-          sender: tinyAccount.address,
-          nonce: 0,
-          initCode: [],
-          callData: callData,
-          callGasLimit: await ethers.provider.estimateGas({
-            from: entryPointAddress,
-            to: tinyAccount.address,
-            data: callData,
-          }),
-          verificationGasLimit: 100_000,
-          preVerificationGas: 21_000,
-          maxFeePerGas: block.baseFeePerGas!.add(maxPriorityFeePerGas),
-          maxPriorityFeePerGas: maxPriorityFeePerGas,
-          paymasterAndData: [],
-          signature: [],
-        };
+      const userOp: UserOperation = {
+        sender: tinyAccount.address,
+        nonce: 0,
+        initCode: [],
+        callData: callData,
+        callGasLimit: await ethers.provider.estimateGas({
+          from: entryPointAddress,
+          to: tinyAccount.address,
+          data: callData,
+        }),
+        verificationGasLimit: 100_000,
+        preVerificationGas: 21_000,
+        maxFeePerGas: block.baseFeePerGas!.add(maxPriorityFeePerGas),
+        maxPriorityFeePerGas: maxPriorityFeePerGas,
+        paymasterAndData: [],
+        signature: [],
+      };
 
-        userOpHash = utils.getUserOperationHash(
-          userOp,
-          entryPointAddress,
-          network.chainId
-        );
-      }
+      const userOpHash = getUserOperationHash(
+        userOp,
+        entryPointAddress,
+        network.chainId
+      );
 
       userOp.signature = await owner.signMessage(userOpHash);
 
