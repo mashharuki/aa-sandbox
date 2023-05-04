@@ -102,12 +102,14 @@ describe("TinyAccount", () => {
 
       userOp.signature = await owner.signMessage(userOpHash);
 
+      // valid
       expect(
         await tinyAccount.callStatic.validateUserOp(userOp, userOpHash, 0)
       ).to.equal(0);
 
       userOp.signature = await other.signMessage(userOpHash);
 
+      // invalid
       expect(
         await tinyAccount.callStatic.validateUserOp(userOp, userOpHash, 0)
       ).to.equal(1);
