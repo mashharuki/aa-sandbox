@@ -128,7 +128,7 @@ describe("TinyAccount", () => {
     it("success", async () => {
       const { owner, other, tinyAccount } = await loadFixture(fixture);
 
-      // send 1 ETH owner to tinyAccount
+      // send 1 ETH from owner to tinyAccount
       {
         const tx = await owner.sendTransaction({
           to: tinyAccount.address,
