@@ -16,7 +16,7 @@ const MAX_PRIORITY_FEE_PER_GAS = ethers.utils.parseUnits("3", "gwei");
   const [owner] = await ethers.getSigners();
 
   const entryPoint = await ethers.getContractAt(
-    "IEntryPoint",
+    "IERC4337EntryPoint",
     ENTRY_POINT_ADDRESS
   );
   const tinyAccount = await ethers.getContractAt(

@@ -3,7 +3,7 @@ pragma solidity 0.8.19;
 
 import "./UserOperation.sol";
 
-interface IAccount {
+interface IERC4337Account {
     function validateUserOp(
         UserOperation calldata userOp,
         bytes32 userOpHash,

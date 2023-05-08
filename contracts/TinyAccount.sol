@@ -4,9 +4,9 @@ pragma solidity 0.8.19;
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
 
-import "./IAccount.sol";
+import "./IERC4337Account.sol";
 
-contract TinyAccount is IAccount, Ownable {
+contract TinyAccount is IERC4337Account, Ownable {
     using ECDSA for bytes32;
 
     address public immutable entryPoint;
