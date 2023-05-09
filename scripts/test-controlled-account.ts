@@ -6,7 +6,6 @@ const ENTRY_POINT_ADDRESS = "0x5FF137D4b0FDCD49DcA30c7CF57E578a026d2789";
 const CONTROLLER_ADDRESS = "0x68C1c3028f34f6b46813bec01c6836f8862caEDd";
 const CONTROLLED_ACCOUNT_ADDRESS = "0x6E67962D181477DE46c06B020543e4e1F485b091";
 
-const NONCE_KEY = ethers.BigNumber.from(0);
 const VERIFICATION_GAS_LIMIT = ethers.BigNumber.from(100_000);
 const PRE_VERIFICATION_GAS = ethers.BigNumber.from(21_000);
 const MAX_PRIORITY_FEE_PER_GAS = ethers.utils.parseUnits("3", "gwei");
@@ -40,7 +39,10 @@ const MAX_PRIORITY_FEE_PER_GAS = ethers.utils.parseUnits("3", "gwei");
 
   const userOp: UserOperation = {
     sender: controller.address,
-    nonce: await entryPoint.getNonce(controller.address, NONCE_KEY),
+    nonce: await entryPoint.getNonce(
+      controller.address,
+      controlledAccount.address
+    ),
     initCode: [],
     callData: callData,
     callGasLimit: await ethers.provider.estimateGas({

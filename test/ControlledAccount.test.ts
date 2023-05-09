@@ -91,7 +91,10 @@ describe("ControlledAccount", () => {
 
       const userOp: UserOperation = {
         sender: controller.address,
-        nonce: 0,
+        nonce: ethers.utils.concat([
+          controlledAccount.address,
+          "0x0000000000000000",
+        ]),
         initCode: [],
         callData: callData,
         callGasLimit: await ethers.provider.estimateGas({

@@ -56,6 +56,10 @@ contract Controller is IController {
             (address, address, uint256, bytes)
         );
 
+        if (address(uint160(userOp_.nonce >> 64)) != account) {
+            return (account, SIG_VALIDATION_FAILED);
+        }
+
         return (
             account,
             IAccount(account).isValidSignature(
