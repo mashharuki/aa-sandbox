@@ -23,6 +23,7 @@ describe("TinyAccount", () => {
       const { owner, tinyAccount } = await loadFixture(fixture);
 
       expect(await tinyAccount.owner()).to.equal(owner.address);
+      expect(await tinyAccount.entryPoint()).to.equal(owner.address);
     });
   });
 
@@ -117,12 +118,12 @@ describe("TinyAccount", () => {
   });
 
   describe("execute", () => {
-    it("failure: caller must be the owner or the entry point", async () => {
+    it("failure: caller must be the entry point", async () => {
       const { other, tinyAccount } = await loadFixture(fixture);
 
       await expect(
         tinyAccount.connect(other).execute(ethers.constants.AddressZero, 0, [])
-      ).to.be.revertedWith("TA: caller must be the owner or the entry point");
+      ).to.be.revertedWith("TA: caller must be the entry point");
     });
 
     it("success", async () => {

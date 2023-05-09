@@ -16,14 +16,6 @@ contract TinyAccount is IERC4337Account, Ownable {
         _;
     }
 
-    modifier onlyOwnerOrEntryPoint() {
-        require(
-            msg.sender == owner() || msg.sender == entryPoint,
-            "TA: caller must be the owner or the entry point"
-        );
-        _;
-    }
-
     constructor(address entryPoint_) {
         entryPoint = entryPoint_;
     }
@@ -54,7 +46,7 @@ contract TinyAccount is IERC4337Account, Ownable {
         address to_,
         uint256 value_,
         bytes calldata data_
-    ) external onlyOwnerOrEntryPoint {
+    ) external onlyEntryPoint {
         (bool success, bytes memory result) = to_.call{value: value_}(data_);
         if (!success) {
             assembly {
