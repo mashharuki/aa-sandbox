@@ -3,7 +3,7 @@ pragma solidity 0.8.19;
 
 import "./UserOperation.sol";
 
-interface IEntryPoint {
+interface IERC4337EntryPoint {
     function getNonce(
         address sender,
         uint192 key
