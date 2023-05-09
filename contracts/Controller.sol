@@ -4,9 +4,10 @@ pragma solidity 0.8.19;
 import "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
 
 import "./IAccount.sol";
+import "./IController.sol";
 import "./UserOperation.sol";
 
-contract Controller {
+contract Controller is IController {
     using ECDSA for bytes32;
 
     address public immutable entryPoint;
@@ -46,7 +47,7 @@ contract Controller {
         }
 
         if (missingAccountFunds_ > 0) {
-            IAccount(account).execute(msg.sender, missingAccountFunds_, "");
+            IAccount(account).deposit(missingAccountFunds_);
         }
     }
 

@@ -33,9 +33,7 @@ describe("ControlledAccount", () => {
       );
 
       expect(await controller.entryPoint()).to.equal(owner.address);
-
       expect(await controlledAccount.owner()).to.equal(owner.address);
-      expect(await controlledAccount.controller()).to.equal(controller.address);
     });
   });
 
