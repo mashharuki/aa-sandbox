@@ -34,7 +34,7 @@ const MAX_PRIORITY_FEE_PER_GAS = ethers.utils.parseUnits("3", "gwei");
 
   const userOp: UserOperation = {
     sender: tinyAccount.address,
-    nonce: await entryPoint.getNonce(owner.address, NONCE_KEY),
+    nonce: await entryPoint.getNonce(tinyAccount.address, NONCE_KEY),
     initCode: [],
     callData: callData,
     callGasLimit: await ethers.provider.estimateGas({
