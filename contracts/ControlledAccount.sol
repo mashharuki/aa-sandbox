@@ -30,7 +30,7 @@ contract ControlledAccount is IAccount, Ownable {
     function isValidSignature(
         bytes32 hash_,
         bytes memory signature_
-    ) external view returns (bytes4 magicValue_) {
+    ) external view returns (bytes4) {
         require(hash_.recover(signature_) == owner(), "CA: invalid signer");
 
         return IERC1271.isValidSignature.selector;

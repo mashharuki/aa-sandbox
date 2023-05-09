@@ -9,7 +9,14 @@ import "./IERC4337Account.sol";
 contract TinyAccount is IERC4337Account, Ownable {
     using ECDSA for bytes32;
 
+    uint256 private constant SIG_VALIDATION_FAILED = 1;
+
     address public immutable entryPoint;
+
+    modifier onlyMyself() {
+        require(msg.sender == address(this), "TA: caller must be myself");
+        _;
+    }
 
     modifier onlyEntryPoint() {
         require(msg.sender == entryPoint, "TA: caller must be the entry point");
@@ -26,20 +33,32 @@ contract TinyAccount is IERC4337Account, Ownable {
         UserOperation calldata userOp_,
         bytes32 userOpHash_,
         uint256 missingAccountFunds_
-    ) external onlyEntryPoint returns (uint256 validationData_) {
-        if (
-            userOpHash_.toEthSignedMessageHash().recover(userOp_.signature) ==
-            owner()
+    ) external onlyEntryPoint returns (uint256) {
+        try this._validateUserOp(userOp_, userOpHash_) returns (
+            uint256 validationData
         ) {
-            validationData_ = 0;
-        } else {
-            validationData_ = 1;
-        }
+            if (validationData == 0 && missingAccountFunds_ > 0) {
+                (bool success, ) = msg.sender.call{value: missingAccountFunds_}(
+                    ""
+                );
+                (success);
+            }
 
-        if (missingAccountFunds_ > 0) {
-            (bool success, ) = msg.sender.call{value: missingAccountFunds_}("");
-            (success);
+            return validationData;
+        } catch {
+            return SIG_VALIDATION_FAILED;
         }
+    }
+
+    function _validateUserOp(
+        UserOperation calldata userOp_,
+        bytes32 userOpHash_
+    ) external view onlyMyself returns (uint256) {
+        return
+            userOpHash_.toEthSignedMessageHash().recover(userOp_.signature) ==
+                owner()
+                ? 0
+                : SIG_VALIDATION_FAILED;
     }
 
     function execute(
