@@ -54,7 +54,9 @@ contract TinyAccount is IERC4337Account, Ownable {
         UserOperation calldata userOp_,
         bytes32 userOpHash_
     ) external view onlyMyself returns (uint256) {
-        require(userOp_.nonce < type(uint64).max, "TA: invalid nonce");
+        if (userOp_.nonce >= type(uint64).max) {
+            return SIG_VALIDATION_FAILED;
+        }
 
         return
             userOpHash_.toEthSignedMessageHash().recover(userOp_.signature) ==
