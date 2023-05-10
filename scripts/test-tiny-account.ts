@@ -3,7 +3,7 @@ import { ethers } from "hardhat";
 import { UserOperation, getUserOperationHash } from "../lib";
 
 const ENTRY_POINT_ADDRESS = "0x5FF137D4b0FDCD49DcA30c7CF57E578a026d2789";
-const TINY_ACCOUNT_ADDRESS = "0x377dFbEdc9b349c451b6F0DA436503261647E799";
+const TINY_ACCOUNT_ADDRESS = "0x68C1c3028f34f6b46813bec01c6836f8862caEDd"; // goerli
 
 const NONCE_KEY = ethers.BigNumber.from(0);
 const VERIFICATION_GAS_LIMIT = ethers.BigNumber.from(100_000);
