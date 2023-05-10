@@ -10,11 +10,10 @@ const config: HardhatUserConfig = {
 };
 switch (process.env.ENV) {
   case "dev":
-    config.networks = {
-      sepolia: {
-        url: process.env.RPC_URL,
-        accounts: [process.env.PRIVATE_KEY!],
-      },
+    config.networks = {};
+    config.networks[process.env.NETWORK!] = {
+      url: process.env.RPC_URL,
+      accounts: [process.env.PRIVATE_KEY!],
     };
     config.etherscan = {
       apiKey: process.env.ETHERSCAN_API_KEY,
