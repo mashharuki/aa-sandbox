@@ -1,5 +1,8 @@
 import { BigNumberish, BytesLike } from "ethers";
 
+/**
+ * UserOpration型のインターフェース
+ */
 export interface UserOperation {
   sender: string;
   nonce: BigNumberish;

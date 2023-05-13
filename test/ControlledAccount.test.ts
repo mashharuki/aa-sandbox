@@ -6,6 +6,11 @@ import { expect } from "chai";
 import { UserOperation, getUserOperationHash } from "../lib";
 
 describe("ControlledAccount", () => {
+  
+  /**
+   * fixture method
+   * @returns 
+   */
   async function fixture() {
     const network = await ethers.provider.getNetwork();
 
@@ -18,12 +23,19 @@ describe("ControlledAccount", () => {
     const controlledAccountFactory = await ethers.getContractFactory(
       "ControlledAccount"
     );
+    // controller コントラクトアドレスを指定してデプロイ
     const controlledAccount = await controlledAccountFactory.deploy(
       controller.address
     );
     await controlledAccount.deployed();
 
-    return { network, owner, other, controller, controlledAccount };
+    return { 
+      network, 
+      owner, 
+      other, 
+      controller, 
+      controlledAccount 
+    };
   }
 
   describe("initial state", () => {

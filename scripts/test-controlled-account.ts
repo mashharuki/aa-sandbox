@@ -14,7 +14,7 @@ const MAX_PRIORITY_FEE_PER_GAS = ethers.utils.parseUnits("3", "gwei");
   const network = await ethers.provider.getNetwork();
 
   const [owner] = await ethers.getSigners();
-
+  // 各コントラクトのオブジェクトを生成
   const entryPoint = await ethers.getContractAt(
     "IERC4337EntryPoint",
     ENTRY_POINT_ADDRESS
@@ -29,14 +29,14 @@ const MAX_PRIORITY_FEE_PER_GAS = ethers.utils.parseUnits("3", "gwei");
   );
 
   const block = await ethers.provider.getBlock("latest");
-
+  // invokeメソッドのcallデータを作成
   const callData = controller.interface.encodeFunctionData("invoke", [
     controlledAccount.address,
     owner.address,
     ethers.utils.parseEther("0.01"),
     [],
   ]);
-
+  // ユーザーオペレーションデータを作成
   const userOp: UserOperation = {
     sender: controller.address,
     nonce: await entryPoint.getNonce(
@@ -44,7 +44,7 @@ const MAX_PRIORITY_FEE_PER_GAS = ethers.utils.parseUnits("3", "gwei");
       controlledAccount.address
     ),
     initCode: [],
-    callData: callData,
+    callData: callData, // calldataを詰め込む
     callGasLimit: await ethers.provider.estimateGas({
       from: entryPoint.address,
       to: controller.address,
@@ -63,9 +63,9 @@ const MAX_PRIORITY_FEE_PER_GAS = ethers.utils.parseUnits("3", "gwei");
     entryPoint.address,
     network.chainId
   );
-
+  // ユーザーオペレーションに対して署名実施
   userOp.signature = await owner.signMessage(userOpHash);
-
+  // handleOpsメソッドを呼び出してトランザクションをブロックチェーンに流し込む
   const tx = await entryPoint.handleOps([userOp], owner.address);
 
   console.log(tx.hash);

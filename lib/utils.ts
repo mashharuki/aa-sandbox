@@ -4,6 +4,13 @@ import { Bytes } from "ethers";
 
 import { UserOperation } from "./models";
 
+/**
+ * user Opの内容をハッシュ化するためのメソッド
+ * @param userOp 
+ * @param entryPointAddress 
+ * @param chainID 
+ * @returns 
+ */
 export function getUserOperationHash(
   userOp: UserOperation,
   entryPointAddress: string,
