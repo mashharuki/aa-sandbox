@@ -29,12 +29,18 @@ describe("ControlledAccount", () => {
     );
     await controlledAccount.deployed();
 
+    const controlledAccount2 = await controlledAccountFactory.deploy(
+      controller.address
+    );
+    await controlledAccount2.deployed();
+
     return { 
       network, 
       owner, 
       other, 
       controller, 
-      controlledAccount 
+      controlledAccount,
+      controlledAccount2
     };
   }
 
@@ -207,6 +213,91 @@ describe("ControlledAccount", () => {
         otherBalanceBefore.add(ethers.utils.parseEther("0.1"))
       );
       expect(controlledAccountBalanceAfter).to.equal(
+        ethers.utils.parseEther("0.9")
+      );
+    });
+
+    it("success × 2", async () => {
+      const { 
+        owner, 
+        other, 
+        controller, 
+        controlledAccount,
+        controlledAccount2
+      } = await loadFixture(
+        fixture
+      );
+
+      // send 1 ETH from owner to controlledAccount
+      {
+        const tx = await owner.sendTransaction({
+          to: controlledAccount.address,
+          value: ethers.utils.parseEther("1"),
+        });
+        await tx.wait();
+      }
+      // send 1 ETH from owner to controlledAccount2
+      {
+        const tx = await owner.sendTransaction({
+          to: controlledAccount2.address,
+          value: ethers.utils.parseEther("1"),
+        });
+        await tx.wait();
+      }
+      // 処理前残高を取得する。
+      const otherBalanceBefore = await ethers.provider.getBalance(
+        other.address
+      );
+      const controlledAccountBalanceBefore = await ethers.provider.getBalance(
+        controlledAccount.address
+      );
+      const controlledAccount2BalanceBefore = await ethers.provider.getBalance(
+        controlledAccount2.address
+      );
+
+      expect(controlledAccountBalanceBefore).to.equal(
+        ethers.utils.parseEther("1")
+      );
+      expect(controlledAccount2BalanceBefore).to.equal(
+        ethers.utils.parseEther("1")
+      );
+
+      // send 0.1 ETH from controlledAccount to other
+      {
+        const tx = await controller.invoke(
+          controlledAccount.address,
+          other.address,
+          ethers.utils.parseEther("0.1"),
+          []
+        );
+        await tx.wait();
+      }
+      // send 0.1 ETH from controlledAccount2 to other
+      {
+        const tx = await controller.invoke(
+          controlledAccount2.address,
+          other.address,
+          ethers.utils.parseEther("0.1"),
+          []
+        );
+        await tx.wait();
+      }
+
+      const otherBalanceAfter = await ethers.provider.getBalance(other.address);
+      const controlledAccountBalanceAfter = await ethers.provider.getBalance(
+        controlledAccount.address
+      );
+      const controlledAccount2BalanceAfter = await ethers.provider.getBalance(
+        controlledAccount2.address
+      );
+
+      expect(otherBalanceAfter).to.equal(
+        otherBalanceBefore.add(ethers.utils.parseEther("0.2"))
+      );
+      expect(controlledAccountBalanceAfter).to.equal(
+        ethers.utils.parseEther("0.9")
+      );
+      expect(controlledAccount2BalanceAfter).to.equal(
         ethers.utils.parseEther("0.9")
       );
     });
